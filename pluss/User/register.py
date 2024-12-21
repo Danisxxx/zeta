@@ -54,5 +54,5 @@ async def chk(client, msg):
             reply_to_message_id=msg.id
         )
 
-    # Cerrar la conexión
+
     conn.close()
