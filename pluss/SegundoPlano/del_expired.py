@@ -1,10 +1,29 @@
 import asyncio
 from datetime import datetime, timedelta
 import re
-from database.connect_to_db import connect_to_db  # Asegúrate de que connect_to_db esté definido
+import mysql.connector
+import urllib.parse
 
 # Intervalo de actualización en segundos
 update_interval = 1
+
+def connect_to_db():
+    # URL de la base de datos proporcionada
+    mysql_url = "mysql://root:AALCqBDaYexmmkDBZzqGgdMXpBpcwDIj@mysql.railway.internal:3306/railway"
+
+    # Parsear la URL de conexión para obtener los componentes de la base de datos
+    result = urllib.parse.urlparse(mysql_url)
+    db_config = {
+        'user': result.username,
+        'password': result.password,
+        'host': result.hostname,
+        'port': result.port,
+        'database': result.path[1:],  # Elimina el primer carácter '/' del path
+    }
+
+    # Conexión a la base de datos
+    conn = mysql.connector.connect(**db_config)
+    return conn
 
 async def update_viped():
     while True:
@@ -27,6 +46,7 @@ async def update_viped():
                     if match:
                         days_left, hours_left, minutes_left, seconds_left = map(int, match.groups())
 
+                        # Actualizar valores en caso de que los contadores no coincidan
                         if days_left != days - 1:
                             days_left = days - 1
                             hours_left = 23
@@ -48,6 +68,7 @@ async def update_viped():
                             minutes_left = 59
                             seconds_left = 59
 
+                        # Si se ha agotado el tiempo, restablecer rango o expiración
                         if days_left == 0 and hours_left == 0 and minutes_left == 0 and seconds_left == 0:
                             cursor.execute("UPDATE Users SET expiracion = '', dias = dias - 1 WHERE id = %s", (user_id,))
                         else:
@@ -69,6 +90,7 @@ async def update_viped():
                     if match:
                         days_left, hours_left, minutes_left, seconds_left = map(int, match.groups())
 
+                        # Actualizar valores en caso de que los contadores no coincidan
                         if days_left != days - 1:
                             days_left = days - 1
                             hours_left = 23
@@ -90,6 +112,7 @@ async def update_viped():
                             minutes_left = 59
                             seconds_left = 59
 
+                        # Si se ha agotado el tiempo, cambiar rango a 'Free user'
                         if days_left == 0 and hours_left == 0 and minutes_left == 0 and seconds_left == 0:
                             cursor.execute("UPDATE Users SET rango = 'Free user', expiracion = '', dias = dias - 1 WHERE id = %s", (user_id,))
                         else:
