@@ -7,7 +7,7 @@ from configs._def_main_ import *
 # Función para conectar a la base de datos MySQL remota
 def connect_to_db():
     # URL de la base de datos proporcionada
-    mysql_url = "mysql://root:sHevHCtJMyLTeYzQGNHtVHxZcJnlRIMu@mysql.railway.internal:3306/railway"
+    mysql_url = "mysql://root:AALCqBDaYexmmkDBZzqGgdMXpBpcwDIj@mysql.railway.internal:3306/railway"
     
     # Parsear la URL de conexión para obtener los componentes de la base de datos
     import urllib.parse
